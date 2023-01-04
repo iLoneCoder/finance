@@ -1,0 +1,66 @@
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(238, 237, 237);
+    height: 70px;
+    padding: 0 19px;
+    font-size: 17px;
+    border-bottom: 1px solid rgb(207, 207, 207);
+    margin-bottom: 50px;
+}
+
+.left-side {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex: 0 1 500px;
+}
+
+.watermark {
+   flex: 0 1 200px;
+   font-size: 25px;
+}
+
+.nav-item a {
+    text-decoration: none;
+    color: rgb(105, 105, 105);
+}
+
+.nav-item a .first {
+    color: blue;
+}
+
+.nav-item a .second {
+    color: red;
+}
+
+.nav-item a .third {
+    color: rgb(202, 202, 39);
+}
+
+.nav-item a .fourth {
+    color: green;
+}
+
+.nav-item a .fifth {
+    color: red;
+}
+
+.right-side {
+    display: flex;
+    align-items: center;
+}
+
+.logout-btn {
+    color: rgb(105, 105, 105);
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+}
+
+.nav-item a:hover,
+.logout-btn:hover {
+    text-decoration: none;
+    color: rgb(175, 175, 175);
+}

@@ -1,0 +1,9 @@
+.error-container {
+    background-color: rgb(255, 202, 202);
+    text-align: center;
+    padding: 10px;
+}
+
+.error-message {
+    color: rgb(252, 109, 109);
+}

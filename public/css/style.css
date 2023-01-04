@@ -1,0 +1,104 @@
+* {
+    font-family: 'Roboto', Arial;
+    margin: 0;
+    padding: 0;
+}
+
+input::-ms-clear,
+input::-ms-reveal {
+    display: none;
+}
+
+.logo:hover {
+    fill: green;
+}
+
+.login-page,
+.register-page {
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: center;
+    align-items: flex-start;
+    background-color: rgb(224, 224, 224);
+    height: 100vh;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 5px;
+    padding: 12px 50px;
+    flex: 0 1 350px;
+    margin-top: 40px;
+    margin-bottom: 10px;
+}
+
+.card-header {
+    margin-bottom: 15px;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    /* background-color: red; */
+    width: 100%;
+}
+
+.form-group {
+    position: relative;
+    text-align: center;
+}
+
+.custom-placeholder {
+    position: absolute;
+    pointer-events: none;
+    font-size: 12px;
+    top: 8px;
+    left: 6px;
+    background-color: white;
+    padding: 0 5px;
+    transition: 0.12s;
+}
+
+.form-control {
+    width: 100%;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    padding: 7px;
+    border-radius: 5px;
+    border: 1px solid gray;
+    margin-bottom: 14px;
+}
+
+.form-control:focus~label,
+.form-control:valid~label {
+    top: -7px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: darkcyan;
+}
+
+.btn {
+    width: 100%;
+    padding: 7px 0;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    background-color: rgb(185, 185, 185);
+    color: white;
+    margin-bottom: 10px;
+}
+
+.suggestion {
+    display: inline-block;
+}
+
+.form-group a {
+    text-decoration: none;
+}

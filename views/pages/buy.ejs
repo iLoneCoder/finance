@@ -1,0 +1,25 @@
+<%- include('../layout/head')%>
+<%- include('../layout/navbar')%>
+
+<% if (errorMessage) {%>
+    <%- include('../layout/news-block')%>
+<%}%>
+
+
+<main>
+    <form action="/buy" method="post" class="buy-form">
+        <div>
+            <input type="text" class="input-field" name="symbol" placeholder="Symbol" autocomplete="off" autofocus>
+        </div>
+
+        <div>
+            <input type="number" class="input-field" name="shares" placeholder="Shares" autocomplete="off" min="1">
+        </div>
+
+        <button type="submit" class="primary-btn">Buy</button>
+
+        <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+    </form>
+</main>
+
+<%- include('../layout/footer')%>

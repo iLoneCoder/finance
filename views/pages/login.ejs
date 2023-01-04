@@ -1,0 +1,46 @@
+<%- include('../layout/head')%>
+    <div class="login-page">
+        <div>
+            <div class="card">
+
+                <% if(message) {%>
+                <div class="error-container">
+                    <p class="error-message"><%= message%></p>
+                </div>
+                    <%}%>    
+
+                <div class="card-header">
+                    <h1>Sign in to your account</h1>
+                </div>
+
+                <form action="/auth/login" method="post" class="card-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="username" id="username" required>
+                        <label class="custom-placeholder">Username</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="password" id="password" required>
+                        <label class="custom-placeholder">Password</label>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn">Login</button>
+                    </div>
+
+                    <div class="form-group">
+                        <a href="coming/soon">Forgot your password ?</a>
+                    </div>
+
+                    <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+                </form>
+
+            </div>
+
+            <div class="form-group">
+                <p class="suggestion">Don't have an account ? </p>
+                <a href="/auth/register">Create an account</a>
+            </div>
+        </div>
+    </div>
+    <%- include('../layout/footer')%>

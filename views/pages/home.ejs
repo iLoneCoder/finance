@@ -1,0 +1,77 @@
+<%- include('../layout/head')%>
+
+    <%- include('../layout/navbar')%>
+
+    <% if(message) {%>
+        <%- include('../layout/notification')%>
+    <%}%>    
+
+        <main class="container">
+
+
+            <div class="table-header">
+                <p>Symbol</p>
+            </div>
+
+            <div class="table-header">
+                <p>Name</p>
+            </div>
+
+            <div class="table-header right-side">
+                <p>Shares</p>
+            </div>
+
+            <div class="table-header right-side">
+                <p>Price</p>
+            </div>
+
+            <div class="table-header right-side">
+                <p>TOTAL</p>
+            </div>
+
+            <div class="horizontal-line">
+            </div>
+
+            <%for(let row of userShares) {%>
+                <div class="item">
+                    <p><%=row.symbol%></p>
+                </div>
+
+                <div class="item">
+                    <p><%=row.name%></p>
+                </div>
+
+                <div class="item right-side">
+                    <p><%=row.shares%></p>
+                </div>
+
+                <div class="item right-side">
+                    <p>$<%=row.price%></p>
+                </div>
+
+                <div class="item right-side">
+                    <p>$<%=row.total%></p>
+                </div>
+
+                <div class="horizontal-line-thin"></div>
+            <%}%>
+
+
+            <div class="footer-a">
+                <p>Cash</p>
+            </div>
+
+            <div class="footer-b">
+                <p>$<%=amountOnAccount%></p>
+            </div>
+
+            <div class="footer-a">
+                <p>TOTAL</p>
+            </div>
+
+            <div class="footer-b">
+                <p>$<%=amountOnAccount%></p>
+            </div>
+        </main>
+
+        <%- include('../layout/footer')%>

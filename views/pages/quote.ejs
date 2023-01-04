@@ -1,0 +1,29 @@
+<%- include('../layout/head')%>
+
+<%- include('../layout/navbar')%>
+
+<%if(errorMessage) {%>
+    <%- include('../layout/news-block')%>
+<%}%>
+
+<main>
+    <% if(message) {%>
+        <div class="quote-form">
+            <p><%= message%></p>
+        </div>
+    <%} else {%>    
+        <form action="/quote" method="post" class="quote-form">
+
+            <div>
+                <input type="text" name="quote" class="input-field" placeholder="Quote" autocomplete="off" autofocus>
+            </div>
+
+           <button class="primary-btn">Quote</button>
+
+           <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+        </form>
+    <%}%>
+</main>
+
+
+<%- include('../layout/footer')%>
