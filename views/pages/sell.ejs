@@ -1,0 +1,29 @@
+<%- include('../layout/head')%>
+<%- include('../layout/navbar')%>
+
+<% if(errorMessage) {%>
+    <%- include('../layout/news-block')%>
+<%}%>
+<main>
+    <form action="/sell" method="post" class="sell-form">
+
+        <div>
+            <select name="symbol" class="select-form">
+                <option value="symbol" selected disabled>Symbol</option>
+                <% for(let share of myShares) {%>
+                    <option value="<%=share.symbol%>"><%=share.symbol%></option>
+                <%}%>
+            </select>
+        </div>
+
+        <div>
+            <input type="number" name="shares" class="input-field" min="1" placeholder="Shares">
+        </div>
+
+        <button type="submit" class="primary-btn">Sell</button>
+
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+    </form>
+</main>
+
+<%- include('../layout/footer')%>
