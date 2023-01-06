@@ -1,8 +1,10 @@
 const axios = require("axios")
+const { promiseImpl } = require("ejs")
 const db = require("../db")
 
 const { myRound } = require("../util-functions/myMath")
 const { retrieveShareData } = require("../util-functions/retrieveShareData")
+const { datetime } = require("../util-functions/dateFormater")
 exports.getHome = (req, res) => {
     let message = req.flash('notification')
     message = message.length > 0 ? message[0] : null
@@ -26,14 +28,14 @@ exports.getHome = (req, res) => {
             `
             db.each(sql, [req.session.userId], (err, shareRow) => {
                 if (err) return console.error(err.message)
-                shareRow.price = myRound(shareRow.price, 2).toFixed(2)  // Number(Math.round(shareRow.price + 'e2') + 'e-2').toFixed(2)
-                shareRow.total = myRound(shareRow.total, 2).toFixed(2) // Number(Math.round(shareRow.total + 'e2') + 'e-2').toFixed(2)
+                shareRow.price = myRound(shareRow.price, 2).toFixed(2)
+                shareRow.total = myRound(shareRow.total, 2).toFixed(2)
                 userShares.push(shareRow)
             },
                 (err, numberOfRows) => {
                     if (err) return console.error(err.message)
 
-                    const amountOnAccount = myRound(row.amount, 2).toFixed(2) //Number(Math.round(row.amount + 'e2') + 'e-2').toFixed(2)
+                    const amountOnAccount = myRound(row.amount, 2).toFixed(2)
 
                     if (numberOfRows === 0) {
                         return res.render("pages/home", { userShares, message: "", amountOnAccount })
@@ -65,13 +67,13 @@ exports.postQuote = async (req, res) => {
             return res.redirect("/quote")
         }
 
-        const response = await axios.get(`https://api.iex.cloud/v1/data/core/quote/${quote}/?token=${process.env.API_KEY}`)
+        const response = await retrieveShareData(quote)
 
-        if (Object.keys(response.data[0]).length === 0) {
+        if (Object.keys(response).length === 0) {
             res.render("pages/quote", { message: "Wrong symbol", errorMessage: "" })
         } else {
             res.render("pages/quote", {
-                success: true, message: `A share of  ${response.data[0].companyName} (${response.data[0].symbol}) costs \$${response.data[0].latestPrice}`,
+                success: true, message: `A share of  ${response.companyName} (${response.symbol}) costs \$${response.latestPrice}`,
                 errorMessage: ""
             })
         }
@@ -87,6 +89,28 @@ exports.getBuy = (req, res) => {
     let message = req.flash("error")
     message = message.length > 0 ? message[0] : null
     res.render("pages/buy", { errorMessage: message })
+}
+
+//Insert transaction in db
+const addHistory = (historyData, buy = true) => {
+
+    return new Promise((resolve, reject) => {
+        let sql = `INSERT INTO history (symbol, quantity, price, transacted, user_id)
+        VALUES (?,?,?,?,?)`
+        let { symbol, quantity, price, user_id } = historyData
+        quantity = buy ? quantity : -1 * quantity
+
+        console.log(buy)
+        db.run(sql, [symbol, quantity, price, datetime(new Date()), user_id], err => {
+            if (err) {
+                return reject(err.message)
+            }
+
+            return resolve()
+        })
+
+
+    })
 }
 
 exports.postBuy = (req, res) => {
@@ -110,9 +134,9 @@ exports.postBuy = (req, res) => {
             if (row) {
                 //user was found
                 //now retrieving share data
-                const response = await axios.get(`https://api.iex.cloud/v1/data/core/quote/${symbol}/?token=${process.env.API_KEY}`)
-                const shareInfo = response.data[0]
-                if (Object.keys(response.data[0]).length === 0) {
+                const shareInfo = await retrieveShareData(symbol)
+                // const shareInfo = response.data[0]
+                if (Object.keys(shareInfo).length === 0) {
                     req.flash("error", "Wrong symbol!")
                     return res.redirect("/buy")
                 } else {
@@ -139,8 +163,14 @@ exports.postBuy = (req, res) => {
                                     db.run(sql, [currentUserAmount, row.id], err => {
                                         if (err) return console.error(err.message)
 
-                                        req.flash('notification', 'Bought!')
-                                        return res.redirect("/home")
+                                        //Adding to history
+                                        addHistory({ symbol, quantity: shares, price: myRound(shareInfo.latestPrice, 2), user_id: row.id })
+                                            .then(() => {
+                                                req.flash('notification', 'Bought!')
+                                                return res.redirect("/home")
+                                            })
+                                            .catch(err => console.log(err))
+
                                     })
 
                                 })
@@ -159,9 +189,14 @@ exports.postBuy = (req, res) => {
                                     sql = `UPDATE users SET amount=? WHERE id=?`
                                     db.run(sql, [myRound(currentUserAmount, 2), row.id], err => {
                                         if (err) console.error(err.message)
-                                        // console.log(currentUserAmount)
-                                        req.flash("notification", "Bought!")
-                                        return res.redirect("/home")
+                                        //add to history
+                                        addHistory({ symbol, quantity: shares, price: myRound(shareInfo.latestPrice, 2), user_id: row.id })
+                                            .then(() => {
+                                                req.flash("notification", "Bought!")
+                                                return res.redirect("/home")
+                                            })
+                                            .catch(err => console.log(err))
+
                                     })
                                 }
 
@@ -232,9 +267,13 @@ exports.postSell = (req, res) => {
                                 sql = `UPDATE users SET amount=? WHERE id=?`
                                 db.run(sql, [myRound(userRow.amount + income, 2), userId], err => {
                                     if (err) return console.error(err.message)
-
-                                    req.flash('notification', "Sold")
-                                    return res.redirect("/home")
+                                    //add to history
+                                    addHistory({ symbol, quantity: shares, price: myRound(shareInfo.latestPrice, 2), user_id: userId }, false)
+                                        .then(() => {
+                                            req.flash('notification', "Sold")
+                                            return res.redirect("/home")
+                                        })
+                                        .catch(err => console.log(err))
                                 })
                             })
 
@@ -258,12 +297,16 @@ exports.postSell = (req, res) => {
                             db.get(sql, [userId], (err, userRow) => {
                                 if (err) return console.error(err.message)
                                 sql = `UPDATE users SET amount=? WHERE id=?`
-                                console.log(userRow.amount + income)
+                                // console.log(userRow.amount + income)
                                 db.run(sql, [myRound(userRow.amount + income, 2), userId], err => {
                                     if (err) return console.error(err.message)
-
-                                    req.flash('notification', 'Sold')
-                                    return res.redirect("/home")
+                                    //add to history
+                                    addHistory({ symbol, quantity: shares, price: myRound(shareInfo.latestPrice, 2), user_id: userId }, false)
+                                        .then(() => {
+                                            req.flash('notification', 'Sold')
+                                            return res.redirect("/home")
+                                        })
+                                        .catch(err => console.log(err))
                                 })
                             })
                         } else {
@@ -284,5 +327,29 @@ exports.postSell = (req, res) => {
     } catch (error) {
         console.log(error)
     }
+
+}
+
+exports.getHistory = (req, res) => {
+    const userId = req.session.userId
+    const historyInfo = []
+    let sql = "SELECT * FROM history WHERE user_id=?"
+    // console.log(datetime(new Date()))
+    db.each(sql, [userId],
+        (err, row) => {
+            if (err) return console.error(err.message)
+
+            historyInfo.push({
+                symbol: row.symbol,
+                quantity: row.quantity,
+                price: myRound(row.price, 2).toFixed(2),
+                transacted: row.transacted
+            })
+        },
+        (err, numberOfrow) => {
+            if (err) return console.error(err.message)
+
+            return res.render('pages/history', { historyInfo })
+        })
 
 }

@@ -7,6 +7,7 @@ router.get("/home", defAuth, mainController.getHome)
 router.get("/quote", defAuth, mainController.getQuote)
 router.get("/buy", defAuth, mainController.getBuy)
 router.get("/sell", defAuth, mainController.getSell)
+router.get("/history", defAuth, mainController.getHistory)
 
 router.post("/quote", defAuth, mainController.postQuote)
 router.post("/buy", defAuth, mainController.postBuy)

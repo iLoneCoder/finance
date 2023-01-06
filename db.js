@@ -28,12 +28,28 @@ const createSharesTable = db => {
     `)
 }
 
+const createHistoryTable = db => {
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS history
+        (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol  VARCHAR(50) NOT NULL,
+            quantity  INTEGER NOT NULL,
+            price DECIMAL(15,2) NOT NULL,
+            transacted TEXT NOT NULL,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    `)
+}
+
 const createDbConnection = () => {
     const db = new sqlite3.Database("./finances.db", err => {
         if (err) return console.error(err.message)
 
         createUserTable(db)
         createSharesTable(db)
+        createHistoryTable(db)
     })
 
     console.log("Connection has been established")
