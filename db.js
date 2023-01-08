@@ -7,6 +7,7 @@ const createUserTable = db => {
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username VARCHAR(80) NOT NULL,
+            email TEXT NOT NULL,
             password VARCHAR(100) NOT NULL,
             amount DECIMAL(15,2) DEFAULT 10000.00 NOT NULL
         )

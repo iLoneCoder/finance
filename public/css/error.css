@@ -2,6 +2,7 @@
     background-color: rgb(255, 202, 202);
     text-align: center;
     padding: 10px;
+    border-radius: 5px;
 }
 
 .error-message {
