@@ -102,3 +102,19 @@ input::-ms-reveal {
 .form-group a {
     text-decoration: none;
 }
+
+.pageNotFoundPage-page {
+    display: flex;
+    align-items: center;
+    background-color: rgb(224, 224, 224);
+    height: 100vh;
+}
+
+.pageNotFoundPage-page .item {
+    flex: 1;
+    background-color: #fff;
+}
+
+.pageNotFoundPage-page .item div {
+    margin-bottom: 20px;
+}

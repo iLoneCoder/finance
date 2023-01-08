@@ -39,18 +39,23 @@ app.use((req, res, next) => {
 app.use("/auth", authRouter)
 app.use("/", mainRouter)
 
-//Error handling
-// app.get("/*", (req, res, next) => {
-//     res.status(404)
-//     throw new Error("Page not found");
-// })
+//If entered only domain, it will be redirected to login
+app.get("/", (req, res) => {
+    res.redirect('/auth/login')
+})
 
-// app.use((err, req, res, next) => {
-//     if (res.statusCode === 404) {
-//         return res.render("pages/pageNotFound", { message: err.message })
-//     }
+//Error handling
+app.get("/*", (req, res, next) => {
+    res.status(404)
+    throw new Error("Page not found");
+})
+
+app.use((err, req, res, next) => {
+    if (res.statusCode === 404) {
+        return res.render("pages/pageNotFound", { message: err.message })
+    }
     
-//     res.send({message: "Unhandled message"})
-// })
+    res.send({message: "Unhandled message"})
+})
 
 app.listen(3000, () => console.log("Server is running"))
